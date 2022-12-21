@@ -76,7 +76,7 @@ const getProject = async (req, res, next) => {
     [period]
   );
   const forecastByBrand = await pool.query(
-    "SELECT SUM(forecast_co2) AS forecast_co2, brand_name FROM car WHERE period = ? GROUP BY brand_name",
+    "SELECT SUM(forecast_co2) AS forecast_co2, brand_name, COUNT(*) AS registerCars FROM car WHERE period = ? GROUP BY brand_name",
     [period]
   );
 
