@@ -12,6 +12,7 @@ const {
   getAllProjectForecast,
   getBrandCO2,
   getForecastPeriod,
+  getAllCar,
 } = require("./controller");
 require("./database");
 
@@ -30,12 +31,13 @@ app.use(express.urlencoded({ extended: true }));
 app.get("/brand", getBrand);
 app.get("/brand/co2", getBrandCO2);
 app.post("/forecast", postForecast);
-app.get("/project", getAllProject);
 app.get("/project/forecast", getAllProjectForecast);
 app.get("/project/:period_id", getProject);
+app.get("/project", getAllProject);
 app.post("/project", createProject);
 app.get("/project/search", searchProject);
 app.get("/forecast", getForecastPeriod);
+app.get("/car", getAllCar);
 
 app.listen(app.get("PORT"), app.get("HOST"), () => {
   console.log(

@@ -23,8 +23,6 @@ const getBrand = async (req, res, next) => {
 const getBrandCO2 = async (req, res, next) => {
   const brands = await pool.query("SELECT * FROM brand");
 
-  console.log(brands);
-
   res.status(200).json({
     status: "OK",
     brands: brands.map((brand) => ({
@@ -48,7 +46,6 @@ const postForecast = async (req, res, next) => {
   );
 
   const forecast_co2 = brand.brand_co2 * km;
-  console.log({ brand_co2: brand.brand_co2, km, forecast_co2 });
 
   await pool.query(
     `INSERT INTO car (
@@ -99,24 +96,27 @@ const getProject = async (req, res, next) => {
 const getAllProject = async (req, res, next) => {
   const period = req.query.project;
   let projects = [];
-  let registerCars = null;
-  let totalCO2 = null;
+  let cars = null;
 
-  console.log(period);
   if (period) {
-    console.log("--------- FUNCIONA ----------");
     projects = await pool.query("SELECT * FROM project WHERE period LIKE ?", [
       "%" + period + "%",
     ]);
+    cars = await pool.query(
+      "SELECT COUNT(*) AS cars, SUM(forecast_co2) AS co2, period FROM car WHERE period = ? ORDER BY period",
+      [period]
+    );
   } else {
-    projects = await pool.query("SELECT * FROM project");
+    projects = await pool.query("SELECT * FROM project ORDER BY period");
+    cars = await pool.query(
+      "SELECT COUNT(*) AS cars, SUM(forecast_co2) AS co2, period FROM car GROUP BY period ORDER BY period"
+    );
   }
-
-  console.log(projects);
 
   res.status(200).json({
     status: "OK",
     projects,
+    cars,
   });
 };
 
@@ -170,6 +170,23 @@ const getForecastPeriod = async (req, res, next) => {
   });
 };
 
+const getAllCar = async (req, res, next) => {
+  const period = req.query.period;
+  const cars = await pool.query("SELECT * FROM car WHERE period = ?", [period]);
+
+  res.status(200).json({
+    status: "OK",
+    cars: cars.map((car) => ({
+      car_id: car.car_id,
+      car_driver: car.car_driver,
+      car_registration: car.car_registration,
+      car_km: car.car_km,
+      car_co2: car.forecast_co2 / 1000,
+      car_date: car.car_date,
+    })),
+  });
+};
+
 module.exports = {
   getBrand,
   getBrandCO2,
@@ -180,4 +197,5 @@ module.exports = {
   createProject,
   getAllProjectForecast,
   getForecastPeriod,
+  getAllCar,
 };
