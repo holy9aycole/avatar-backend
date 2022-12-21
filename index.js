@@ -13,6 +13,7 @@ const {
   getBrandCO2,
   getForecastPeriod,
   getAllCar,
+  postUser,
 } = require("./controller");
 require("./database");
 
@@ -38,6 +39,7 @@ app.post("/project", createProject);
 app.get("/project/search", searchProject);
 app.get("/forecast", getForecastPeriod);
 app.get("/car", getAllCar);
+app.post("/user", postUser);
 
 app.listen(app.get("PORT"), app.get("HOST"), () => {
   console.log(

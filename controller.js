@@ -1,5 +1,6 @@
 const pool = require("./database");
 const crypto = require("crypto");
+const bcrypt = require("bcrypt");
 
 BigInt.prototype.toJSON = function () {
   return this.toString();
@@ -187,6 +188,40 @@ const getAllCar = async (req, res, next) => {
   });
 };
 
+const postUser = async (req, res, next) => {
+  const email = req.body.email;
+  const password = req.body.password;
+
+  console.log(email, password);
+
+  const [user] = await pool.query("SELECT * FROM user WHERE email = ?", [
+    email,
+  ]);
+
+  if (!user) {
+    return res.status(404).json({
+      status: "NotFound",
+      error: "Correo electrónico incorrecto",
+    });
+  }
+
+  if (bcrypt.compare(password, user.password)) {
+    return res.status(200).json({
+      status: "OK",
+      user: {
+        name: user.name,
+        email: user.email,
+        type: user.type,
+      },
+    });
+  } else {
+    return res.status(404).json({
+      status: "NotFound",
+      error: "Contraseña incorrecta",
+    });
+  }
+};
+
 module.exports = {
   getBrand,
   getBrandCO2,
@@ -198,4 +233,5 @@ module.exports = {
   getAllProjectForecast,
   getForecastPeriod,
   getAllCar,
+  postUser,
 };

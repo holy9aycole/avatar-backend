@@ -27,9 +27,22 @@ CREATE TABLE car (
     CONSTRAINT fk_project_car FOREIGN KEY (period) REFERENCES project (period)
 );
 
+CREATE TABLE user (
+    id CHAR(11) NOT NULL,
+    name CHAR(100) NOT NULL,
+    surname CHAR(100) NOT NULL,
+    type ENUM("ITV", "MA") NOT NULL,
+    email CHAR(100) NOT NULL,
+    password CHAR(60) NOT NULL,
+    date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY(id)
+);
+
 -- Insersion de datos --
 INSERT INTO project (period) VALUES ("2019-2020"), ("2020-2021"), ("2021-2022"), ("2022-2023");
 
 INSERT INTO brand (brand_name, brand_co2)
     VALUES ("TOYOTA", 99.9), ("MERCEDES", 132), ("LEXUS", 145), ("COASTER", 178),
            ("IVECO", 270), ("NISSAN", 316), ("BMW", 1458), ("AUDI", 141), ("MITSUBISHI", 115), ("PORCHE", 251);
+
+INSERT INTO user (id, name, surname, type, email, password) VALUES ("123456789", "Nacho", "Mecha", "ITV", "kitty@gmail.com", "$2b$10$y7IzEbfwzVSEimkGZI/FlOqEFCAY3r.I5.wzOZbXusPS3iz6ahSM6");
